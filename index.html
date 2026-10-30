@@ -22,30 +22,35 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Gemeinsame Kopfleiste (Logo, Kontakt & Buttons in einer Leiste) -->
+    <!-- Gemeinsame Kopfleiste -->
     <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
             
-            <!-- Logo -->
-            <div class="flex items-center">
+            <!-- Logo & Modus-Umschalter -->
+            <div class="flex items-center space-x-6">
                 <img src="jenpneumatik_logo.svg" alt="jenpneumatik Logo" class="h-9 w-auto">
+                
+                <!-- Umschalter Pneumatik / Hydraulik -->
+                <div class="bg-slate-100 p-1 rounded-xl border border-slate-200 flex items-center shadow-inner">
+                    <button id="btnPneu" onclick="setMode('pneumatik')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition bg-[#5c8ab5] text-white shadow">
+                        <i class="fa-solid fa-wind mr-1"></i> Pneumatik
+                    </button>
+                    <button id="btnHyd" onclick="setMode('hydraulik')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900">
+                        <i class="fa-solid fa-droplet mr-1"></i> Hydraulik
+                    </button>
+                </div>
             </div>
 
-            <!-- Kontaktdaten & Aktions-Buttons in einer Zeile -->
+            <!-- Kontaktdaten & Aktions-Buttons -->
             <div class="flex flex-wrap items-center gap-6 text-xs">
-                <div class="hidden md:flex items-center space-x-6 text-slate-600">
+                <div class="hidden lg:flex items-center space-x-6 text-slate-600">
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-phone text-[#5c8ab5]"></i> 03641 35630</span>
                     <a href="mailto:mail@jenpneumatik.de" class="flex items-center gap-1.5 hover:text-[#5c8ab5] underline transition">
                         <i class="fa-solid fa-envelope text-[#5c8ab5]"></i> mail@jenpneumatik.de
                     </a>
                 </div>
 
-                <!-- Buttons -->
                 <div class="flex items-center gap-2">
-                    <a href="https://jenpneumatik.pneumatikatlas.com/de" target="_blank" rel="noopener" 
-                       class="bg-[#5c8ab5] hover:bg-[#4b7398] text-white font-bold px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 text-xs">
-                        <i class="fa-solid fa-cart-shopping"></i> Webshop
-                    </a>
                     <a href="https://www.jenpneumatik.de/" target="_blank" rel="noopener" 
                        class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 text-xs">
                         <i class="fa-solid fa-globe text-blue-400"></i> Website
@@ -64,12 +69,12 @@
             <img src="jenpneumatik_25jahre_banner.png" alt="25 Jahre jenpneumatik" class="w-full h-auto object-cover max-h-[220px]">
         </div>
 
-        <!-- Kurze Einleitung -->
+        <!-- Dynamische Einleitung -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
-                <i class="fa-solid fa-circle-info text-[#5c8ab5]"></i> Willkommen bei JENPNEUMASTER
+            <h2 id="introTitle" class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-[#5c8ab5]"></i> Willkommen bei JENPNEUMASTER – Pneumatik-Portal
             </h2>
-            <p class="text-sm text-slate-600 leading-relaxed">
+            <p id="introText" class="text-sm text-slate-600 leading-relaxed">
                 Dieses interaktive Ingenieurs-Tool veranschaulicht den inneren Aufbau von Pneumatikzylindern nach ISO 15552 und ermöglicht die präzise, dynamische Berechnung von Aus- und Einfahrkräften. Ingenieure und Techniker können hier Wirkflächen nachvollziehen, Betriebsdrücke stufenlos simulieren und genormte sowie individuelle Zylinderdaten direkt für die Konstruktion auslegen.
             </p>
         </div>
@@ -80,7 +85,7 @@
             <!-- 3D CAD Canvas -->
             <div class="lg:col-span-2 bg-white rounded-2xl shadow-md border border-slate-200 p-4 flex flex-col relative overflow-hidden">
                 <div class="flex flex-wrap justify-between items-center mb-2 px-2 gap-2">
-                    <h3 class="text-sm font-bold text-slate-700"><i class="fa-solid fa-cube text-[#5c8ab5] mr-1"></i> 3D-Schnittmodell (Mit Maus drehbar)</h3>
+                    <h3 id="cadTitle" class="text-sm font-bold text-slate-700"><i class="fa-solid fa-cube text-[#5c8ab5] mr-1"></i> 3D-Schnittmodell (Mit Maus drehbar)</h3>
                     
                     <div class="flex items-center gap-2">
                         <button onclick="movePiston('in')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow-sm flex items-center gap-1">
@@ -105,7 +110,7 @@
                     <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
                         <i class="fa-solid fa-circle-info text-[#5c8ab5]"></i> Erläuterung der Wirkflächen
                     </h3>
-                    <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                    <p id="calcDesc" class="text-xs text-slate-600 leading-relaxed mb-4">
                         Im Zylinderrohr wirkt der Druck auf unterschiedliche Flächen, je nach Bewegungsrichtung:
                     </p>
                     
@@ -142,8 +147,8 @@
         <!-- Sektion 3: Interaktiver Kraftrechner -->
         <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 sm:p-8 space-y-6">
             <div class="text-center space-y-1">
-                <h3 class="text-xl font-bold text-slate-900">Interaktiver Zylinder-Kraftrechner (ISO 15552)</h3>
-                <p class="text-xs text-slate-500">Wähle den Kolbendurchmesser (der Stangendurchmesser wird normgerecht voreingestellt, bleibt aber frei anpassbar) und regle den Druck.</p>
+                <h3 id="calcTitle" class="text-xl font-bold text-slate-900">Interaktiver Zylinder-Kraftrechner (ISO 15552)</h3>
+                <p id="calcSub" class="text-xs text-slate-500">Wähle den Kolbendurchmesser (der Stangendurchmesser wird normgerecht voreingestellt, bleibt aber frei anpassbar) und regle den Druck.</p>
             </div>
 
             <!-- Inputs -->
@@ -155,13 +160,7 @@
                     <select id="kolbenInput" 
                         class="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-800 font-mono text-base focus:outline-none focus:border-[#5c8ab5] transition cursor-pointer"
                         onchange="onKolbenChange()">
-                        <option value="32" selected>32 mm</option>
-                        <option value="40">40 mm</option>
-                        <option value="50">50 mm</option>
-                        <option value="63">63 mm</option>
-                        <option value="80">80 mm</option>
-                        <option value="100">100 mm</option>
-                        <option value="125">125 mm</option>
+                        <!-- Optionen werden dynamisch per JS geladen -->
                     </select>
                 </div>
                 
@@ -178,7 +177,7 @@
             <!-- Schieberegler Druck -->
             <div class="space-y-3 bg-slate-50 p-5 rounded-xl border border-slate-200">
                 <div class="flex justify-between items-center">
-                    <label class="text-xs uppercase tracking-wider text-slate-600 font-semibold">
+                    <label id="pressureLabel" class="text-xs uppercase tracking-wider text-slate-600 font-semibold">
                         <i class="fa-solid fa-sliders text-[#5c8ab5] mr-1"></i> Anliegender Betriebsdruck (bar)
                     </label>
                     <span id="pressureVal" class="text-lg font-bold text-[#5c8ab5] font-mono">6.0 bar</span>
@@ -187,9 +186,9 @@
                     class="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#5c8ab5]"
                     oninput="calculateForces()">
                 <div class="flex justify-between text-xs text-slate-400 font-mono">
-                    <span>0.5 bar</span>
-                    <span>8 bar</span>
-                    <span>16 bar</span>
+                    <span id="minPressText">0.5 bar</span>
+                    <span id="midPressText">8 bar</span>
+                    <span id="maxPressText">16 bar</span>
                 </div>
             </div>
 
@@ -201,7 +200,7 @@
                         <span class="text-xs uppercase tracking-wider text-emerald-700 font-bold block mb-1">
                             <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i> Kraft Ausfahren (Kolbenfläche)
                         </span>
-                        <span class="text-xs text-slate-500">Vorschubkraft (inkl. 85% Wirkungsgrad)</span>
+                        <span id="outDesc" class="text-xs text-slate-500">Vorschubkraft (inkl. 85% Wirkungsgrad)</span>
                     </div>
                     <div class="mt-4 space-y-1">
                         <div class="text-3xl font-black text-emerald-600 font-mono" id="forceOutVal">0 N</div>
@@ -216,7 +215,7 @@
                         <span class="text-xs uppercase tracking-wider text-[#5c8ab5] font-bold block mb-1">
                             <i class="fa-solid fa-arrow-left-long-to-bracket mr-1"></i> Kraft Einfahren (Ringfläche)
                         </span>
-                        <span class="text-xs text-slate-500">Rückholkraft (inkl. 85% Wirkungsgrad)</span>
+                        <span id="inDesc" class="text-xs text-slate-500">Rückholkraft (inkl. 85% Wirkungsgrad)</span>
                     </div>
                     <div class="mt-4 space-y-1">
                         <div class="text-3xl font-black text-[#5c8ab5] font-mono" id="forceInVal">0 N</div>
@@ -228,11 +227,11 @@
 
             <!-- Call-to-Action Buttons nach den Ergebnissen -->
             <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-center items-center gap-4">
-                <a href="https://jenpneumatik.pneumatikatlas.com/katalog/de/pneumatische-zylinder/%7BDC9A19AE-8F48-4045-BD8F-48DD0D760723%7D" target="_blank" rel="noopener"
+                <a id="webshopBtn" href="https://jenpneumatik.pneumatikatlas.com/de" target="_blank" rel="noopener"
                    class="w-full sm:w-auto bg-[#5c8ab5] hover:bg-[#4b7398] text-white font-bold px-6 py-3 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm">
                     <i class="fa-solid fa-cart-shopping"></i> Zylinder im Webshop
                 </a>
-                <a href="mailto:mail@jenpneumatik.de?subject=Anfrage%20zu%20pneumatischen%20Zylindern&body=Sehr%20geehrte%20Damen%20und%20Herren,%0A%0AIch%20interessiere%20mich%20für%20pneumatische%20Zylinder%20und%20würde%20gerne%20folgende%20Komponenten%20anfragen:%0A%0A-%20Genormter%20Zylinder:%20[Ja%20/%20Nein%20/%20Welche%20Norm]%0A-%20Kolbendurchmesser:%20[Bitte%20eintragen]%20mm%0A-%20Hublänge:%20[Bitte%20eintragen]%20mm%0A-%20Stückzahl:%20[Bitte%20eintragen]%0A-%20weitere%20Spezifikationen:%20[Bitte%20eintragen]%0A%0ABitte%20lassen%20Sie%20mir%20ein%20Angebot%20zukommen.%0A%0AFreundliche%20Grüße"
+                <a id="emailBtn" href="#"
                    class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold px-6 py-3 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm">
                     <i class="fa-solid fa-envelope"></i> Anfrage an uns
                 </a>
@@ -247,27 +246,111 @@
         <p>© 2026 jenpneumatik & Schlauchtechnik GmbH · JENPNEUMASTER</p>
     </footer>
 
-    <!-- Three.js Skript & Rechner -->
+    <!-- Logik & Three.js -->
     <script>
-        const isoStangenMap = { 32: 12, 40: 16, 50: 20, 63: 20, 80: 25, 100: 25, 125: 32 };
+        let currentMode = 'pneumatik';
+
+        const config = {
+            pneumatik: {
+                title: "Willkommen bei JENPNEUMASTER – Pneumatik-Portal",
+                intro: "Dieses interaktive Ingenieurs-Tool veranschaulicht den inneren Aufbau von Pneumatikzylindern nach ISO 15552 und ermöglicht die präzise, dynamische Berechnung von Aus- und Einfahrkräften. Ingenieure und Techniker können hier Wirkflächen nachvollziehen, Betriebsdrücke stufenlos simulieren und genormte sowie individuelle Zylinderdaten direkt für die Konstruktion auslegen.",
+                cadTitle: "3D-Schnittmodell Pneumatik (ISO 15552)",
+                calcTitle: "Interaktiver Zylinder-Kraftrechner (ISO 15552)",
+                calcSub: "Wähle den Kolbendurchmesser (der Stangendurchmesser wird normgerecht voreingestellt, bleibt aber frei anpassbar) und regle den Druck.",
+                diameters: [32, 40, 50, 63, 80, 100, 125],
+                isoMap: { 32: 12, 40: 16, 50: 20, 63: 20, 80: 25, 100: 25, 125: 32 },
+                minPress: 0.5, maxPress: 16, stepPress: 0.5, defaultPress: 6, unitPress: "bar",
+                shopUrl: "https://jenpneumatik.pneumatikatlas.com/katalog/de/pneumatische-zylinder/%7BDC9A19AE-8F48-4045-BD8F-48DD0D760723%7D",
+                shopText: "Zylinder im Webshop",
+                efficiency: 0.85,
+                emailSubject: "Anfrage zu pneumatischen Zylindern",
+                emailBody: "Sehr geehrte Damen und Herren,\n\nIch interessiere mich für pneumatische Zylinder und würde gerne folgende Komponenten anfragen:\n\n- Genormter Zylinder: [Ja / Nein / Welche Norm]\n- Kolbendurchmesser: [Bitte eintragen] mm\n- Hublänge: [Bitte eintragen] mm\n- Stückzahl: [Bitte eintragen]\n- weitere Spezifikationen: [Bitte eintragen]\n\nBitte lassen Sie mir ein Angebot zukommen.\n\nFreundliche Grüße"
+            },
+            hydraulik: {
+                title: "Willkommen bei JENPNEUMASTER – Hydraulik-Portal",
+                intro: "Dieses interaktive Ingenieurs-Tool veranschaulicht den Aufbau von Hydraulikzylindern und ermöglicht die präzise Berechnung von extremen Kräften in der Hydraulikbranche. Ingenieure und Techniker können hier Betriebsdrücke bis 250 bar simulieren, Ölwirkflächen berechnen und spezifische Komponenten für industrielle Anwendungen anfragen.",
+                cadTitle: "3D-Schnittmodell Hydraulikzylinder",
+                calcTitle: "Interaktiver Hydraulik-Kraftrechner",
+                calcSub: "Wähle den Kolbendurchmesser und den Betriebsdruck zur Auslegung von Hydraulikkomponenten.",
+                diameters: [40, 50, 63, 80, 100, 125, 160, 200],
+                isoMap: { 40: 28, 50: 36, 63: 45, 80: 56, 100: 70, 125: 90, 160: 110, 200: 140 },
+                minPress: 10, maxPress: 250, stepPress: 10, defaultPress: 160, unitPress: "bar",
+                shopUrl: "https://jenpneumatik.pneumatikatlas.com/katalog/de/hydraulikzylinder/%7BEB6D8279-7788-4233-A1A4-FC28F1D3D5EB%7D/suche/Hydraulikzylinder",
+                shopText: "Zylinder im Webshop",
+                efficiency: 0.95, // Geringere Reibung durch Hydraulikölfilm
+                emailSubject: "Anfrage zu Hydraulikzylindern",
+                emailBody: "Sehr geehrte Damen und Herren,\n\nIch interessiere mich für Hydraulikzylinder und würde gerne folgende Komponenten anfragen:\n\n- Kolbendurchmesser: [Bitte eintragen] mm\n- Stangendurchmesser: [Bitte eintragen] mm\n- Betriebsdruck: [Bitte eintragen] bar\n- Hublänge: [Bitte eintragen] mm\n- Stückzahl: [Bitte eintragen]\n- weitere Spezifikationen: [Bitte eintragen]\n\nBitte lassen Sie mir ein Angebot zukommen.\n\nFreundliche Grüße"
+            }
+        };
+
+        function setMode(mode) {
+            currentMode = mode;
+            const c = config[mode];
+
+            // UI Buttons umschalten
+            document.getElementById('btnPneu').className = mode === 'pneumatik' ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-[#5c8ab5] text-white shadow' : 'px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900';
+            document.getElementById('btnHyd').className = mode === 'hydraulik' ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-[#5c8ab5] text-white shadow' : 'px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900';
+
+            // Texte aktualisieren
+            document.getElementById('introTitle').innerHTML = `<i class="fa-solid fa-circle-info text-[#5c8ab5]"></i> ${c.title}`;
+            document.getElementById('introText').innerText = c.intro;
+            document.getElementById('cadTitle').innerHTML = `<i class="fa-solid fa-cube text-[#5c8ab5] mr-1"></i> ${c.cadTitle}`;
+            document.getElementById('calcTitle').innerText = c.calcTitle;
+            document.getElementById('calcSub').innerText = c.calcSub;
+
+            // Slider & Einheiten anpassen
+            const slider = document.getElementById('pressureSlider');
+            slider.min = c.minPress;
+            slider.max = c.maxPress;
+            slider.step = c.stepPress;
+            slider.value = c.defaultPress;
+
+            document.getElementById('minPressText').innerText = `${c.minPress} ${c.unitPress}`;
+            document.getElementById('midPressText').innerText = `${(c.maxPress/2)} ${c.unitPress}`;
+            document.getElementById('maxPressText').innerText = `${c.maxPress} ${c.unitPress}`;
+
+            // Dropdown Kolbendurchmesser befüllen
+            const select = document.getElementById('kolbenInput');
+            select.innerHTML = '';
+            c.diameters.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.innerText = `${d} mm`;
+                select.appendChild(opt);
+            });
+
+            // Webshop Link & Button Text
+            const shopBtn = document.getElementById('webshopBtn');
+            shopBtn.href = c.shopUrl;
+            shopBtn.innerHTML = `<i class="fa-solid fa-cart-shopping"></i> ${c.shopText}`;
+
+            // E-Mail Link Button
+            const mailBtn = document.getElementById('emailBtn');
+            mailBtn.href = `mailto:mail@jenpneumatik.de?subject=${encodeURIComponent(c.emailSubject)}&body=${encodeURIComponent(c.emailBody)}`;
+
+            onKolbenChange();
+        }
 
         function onKolbenChange() {
+            const c = config[currentMode];
             const kolbenVal = parseInt(document.getElementById('kolbenInput').value);
             const stangeField = document.getElementById('stangeInput');
-            if (isoStangenMap[kolbenVal]) {
-                stangeField.value = isoStangenMap[kolbenVal];
+            if (c.isoMap[kolbenVal]) {
+                stangeField.value = c.isoMap[kolbenVal];
             }
             calculateForces();
         }
 
         function calculateForces() {
+            const c = config[currentMode];
             const d_kolben = parseFloat(document.getElementById('kolbenInput').value) || 0;
             const d_stange = parseFloat(document.getElementById('stangeInput').value) || 0;
-            const p_bar = parseFloat(document.getElementById('pressureSlider').value) || 0;
+            const p_val = parseFloat(document.getElementById('pressureSlider').value) || 0;
 
-            document.getElementById('pressureVal').innerText = p_bar.toFixed(1) + " bar";
+            document.getElementById('pressureVal').innerText = `${p_val.toFixed(1)} ${c.unitPress}`;
 
-            const p_nmm2 = p_bar * 0.1;
+            // 1 bar = 0.1 N/mm²
+            const p_nmm2 = p_val * 0.1;
             const a_kolben = (Math.PI / 4) * Math.pow(d_kolben, 2);
             const effectiveStange = d_stange < d_kolben ? d_stange : 0;
             const a_ring = (Math.PI / 4) * (Math.pow(d_kolben, 2) - Math.pow(effectiveStange, 2));
@@ -275,20 +358,42 @@
             const f_out_theo = a_kolben * p_nmm2;
             const f_in_theo = a_ring * p_nmm2;
 
-            const efficiency = 0.85;
-            const f_out_prac = f_out_theo * efficiency;
-            const f_in_prac = f_in_theo * efficiency;
+            const f_out_prac = f_out_theo * c.efficiency;
+            const f_in_prac = f_in_theo * c.efficiency;
 
-            const kg_out = f_out_prac / 9.81;
-            const kg_in = f_in_prac / 9.81;
+            if (currentMode === 'hydraulik') {
+                // Ausgabe in kN und Tonnen für Hydraulik
+                const kn_out = f_out_prac / 1000;
+                const kn_in = f_in_prac / 1000;
+                const t_out = kn_out / 9.81 * 10; // grobe Näherung in t
+                const t_in = kn_in / 9.81 * 10;
 
-            document.getElementById('forceOutVal').innerText = `${Math.round(f_out_prac).toLocaleString('de-DE')} N`;
-            document.getElementById('forceOutKg').innerText = `≈ ${kg_out.toFixed(1)} kg real`;
-            document.getElementById('forceOutTheo').innerText = `Theoretisch: ${Math.round(f_out_theo).toLocaleString('de-DE')} N`;
+                document.getElementById('forceOutVal').innerText = `${kn_out.toFixed(1)} kN`;
+                document.getElementById('forceOutKg').innerText = `≈ ${t_out.toFixed(1)} t real (${Math.round(f_out_prac).toLocaleString('de-DE')} N)`;
+                document.getElementById('forceOutTheo').innerText = `Theoretisch: ${(f_out_theo/1000).toFixed(1)} kN`;
 
-            document.getElementById('forceInVal').innerText = `${Math.round(f_in_prac).toLocaleString('de-DE')} N`;
-            document.getElementById('forceInKg').innerText = `≈ ${kg_in.toFixed(1)} kg real`;
-            document.getElementById('forceInTheo').innerText = `Theoretisch: ${Math.round(f_in_theo).toLocaleString('de-DE')} N`;
+                document.getElementById('forceInVal').innerText = `${kn_in.toFixed(1)} kN`;
+                document.getElementById('forceInKg').innerText = `≈ ${t_in.toFixed(1)} t real (${Math.round(f_in_prac).toLocaleString('de-DE')} N)`;
+                document.getElementById('forceInTheo').innerText = `Theoretisch: ${(f_in_theo/1000).toFixed(1)} kN`;
+
+                document.getElementById('outDesc').innerText = "Vorschubkraft (inkl. 95% Wirkungsgrad)";
+                document.getElementById('inDesc').innerText = "Rückholkraft (inkl. 95% Wirkungsgrad)";
+            } else {
+                // Ausgabe in N und kg für Pneumatik
+                const kg_out = f_out_prac / 9.81;
+                const kg_in = f_in_prac / 9.81;
+
+                document.getElementById('forceOutVal').innerText = `${Math.round(f_out_prac).toLocaleString('de-DE')} N`;
+                document.getElementById('forceOutKg').innerText = `≈ ${kg_out.toFixed(1)} kg real`;
+                document.getElementById('forceOutTheo').innerText = `Theoretisch: ${Math.round(f_out_theo).toLocaleString('de-DE')} N`;
+
+                document.getElementById('forceInVal').innerText = `${Math.round(f_in_prac).toLocaleString('de-DE')} N`;
+                document.getElementById('forceInKg').innerText = `≈ ${kg_in.toFixed(1)} kg real`;
+                document.getElementById('forceInTheo').innerText = `Theoretisch: ${Math.round(f_in_theo).toLocaleString('de-DE')} N`;
+
+                document.getElementById('outDesc').innerText = "Vorschubkraft (inkl. 85% Wirkungsgrad)";
+                document.getElementById('inDesc').innerText = "Rückholkraft (inkl. 85% Wirkungsgrad)";
+            }
         }
 
         // --- THREE.JS 3D SZENE ---
@@ -317,7 +422,6 @@
         const cylinderGroup = new THREE.Group();
         scene.add(cylinderGroup);
 
-        // 1. Zylinderrohr
         const tubeGeo = new THREE.CylinderGeometry(2, 2, 6, 32, 1, true);
         const tubeMat = new THREE.MeshPhysicalMaterial({ color: 0x94a3b8, metalness: 0.8, roughness: 0.2, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
         const tube = new THREE.Mesh(tubeGeo, tubeMat);
@@ -327,14 +431,12 @@
         const movingAssembly = new THREE.Group();
         cylinderGroup.add(movingAssembly);
 
-        // 2. Kolben
         const pistonGeo = new THREE.CylinderGeometry(1.95, 1.95, 0.8, 32);
         const pistonMat = new THREE.MeshStandardMaterial({ color: 0x5c8ab5, metalness: 0.6, roughness: 0.3 });
         const piston = new THREE.Mesh(pistonGeo, pistonMat);
         piston.rotation.z = Math.PI / 2;
         movingAssembly.add(piston);
 
-        // 3. Kolbenstange (helles Metallic-Grau)
         const rodGeo = new THREE.CylinderGeometry(0.6, 0.6, 5, 32);
         const rodMat = new THREE.MeshStandardMaterial({ color: 0x8892b0, metalness: 0.7, roughness: 0.2 });
         const rod = new THREE.Mesh(rodGeo, rodMat);
@@ -342,7 +444,6 @@
         rod.position.x = 2.5;
         movingAssembly.add(rod);
 
-        // 4. Deckel
         const capGeo = new THREE.CylinderGeometry(2.2, 2.2, 0.4, 32);
         const capMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8 });
         
@@ -360,11 +461,7 @@
 
         let targetX = -0.5;
         function movePiston(direction) {
-            if (direction === 'out') {
-                targetX = 1.2;
-            } else {
-                targetX = -1.8;
-            }
+            targetX = (direction === 'out') ? 1.2 : -1.8;
         }
 
         let isDragging = false;
@@ -395,8 +492,9 @@
             camera.lookAt(cylinderGroup.position);
         });
 
+        // Initialisierung beim Start
         window.onload = function() {
-            onKolbenChange();
+            setMode('pneumatik');
         };
     </script>
 </body>
