@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JENPNEUMASTER - Professioneller Zylinder-Kraftrechner</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Three.js für die 3D CAD Darstellung -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- MathJax für mathematische Formeln -->
+    <script>
+    MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Gemeinsame Kopfleiste (Logo, Kontakt & Buttons in einer Leiste) -->
+    <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            
+            <!-- Logo -->
+            <div class="flex items-center">
+                <img src="jenpneumatik_logo.svg" alt="jenpneumatik Logo" class="h-9 w-auto">
+            </div>
+
+            <!-- Kontaktdaten & Aktions-Buttons in einer Zeile -->
+            <div class="flex flex-wrap items-center gap-6 text-xs">
+                <div class="hidden md:flex items-center space-x-6 text-slate-600">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-phone text-[#5c8ab5]"></i> 03641 35630</span>
+                    <a href="mailto:mail@jenpneumatik.de" class="flex items-center gap-1.5 hover:text-[#5c8ab5] underline transition">
+                        <i class="fa-solid fa-envelope text-[#5c8ab5]"></i> mail@jenpneumatik.de
+                    </a>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex items-center gap-2">
+                    <a href="https://jenpneumatik.pneumatikatlas.com/de" target="_blank" rel="noopener" 
+                       class="bg-[#5c8ab5] hover:bg-[#4b7398] text-white font-bold px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 text-xs">
+                        <i class="fa-solid fa-cart-shopping"></i> Webshop
+                    </a>
+                    <a href="https://www.jenpneumatik.de/" target="_blank" rel="noopener" 
+                       class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 text-xs">
+                        <i class="fa-solid fa-globe text-blue-400"></i> Website
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl w-full mx-auto p-4 sm:p-6 space-y-6 my-6">
+        
+        <!-- Responsive Banner -->
+        <div class="w-full bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden flex justify-center">
+            <img src="jenpneumatik_25jahre_banner.png" alt="25 Jahre jenpneumatik" class="w-full h-auto object-cover max-h-[220px]">
+        </div>
+
+        <!-- Kurze Einleitung -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-[#5c8ab5]"></i> Willkommen bei JENPNEUMASTER
+            </h2>
+            <p class="text-sm text-slate-600 leading-relaxed">
+                Dieses interaktive Ingenieurs-Tool veranschaulicht den inneren Aufbau von Pneumatikzylindern nach ISO 15552 und ermöglicht die präzise, dynamische Berechnung von Aus- und Einfahrkräften. Ingenieure und Techniker können hier Wirkflächen nachvollziehen, Betriebsdrücke stufenlos simulieren und genormte sowie individuelle Zylinderdaten direkt für die Konstruktion auslegen.
+            </p>
+        </div>
+
+        <!-- Sektion 1 & 2: 3D CAD Modell & Erklärungen -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- 3D CAD Canvas -->
+            <div class="lg:col-span-2 bg-white rounded-2xl shadow-md border border-slate-200 p-4 flex flex-col relative overflow-hidden">
+                <div class="flex flex-wrap justify-between items-center mb-2 px-2 gap-2">
+                    <h3 class="text-sm font-bold text-slate-700"><i class="fa-solid fa-cube text-[#5c8ab5] mr-1"></i> 3D-Schnittmodell (Mit Maus drehbar)</h3>
+                    
+                    <div class="flex items-center gap-2">
+                        <button onclick="movePiston('in')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow-sm flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-left"></i> Einfahren
+                        </button>
+                        <button onclick="movePiston('out')" class="bg-[#5c8ab5] hover:bg-[#4b7398] text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow-sm flex items-center gap-1">
+                            Ausfahren <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="canvas-container" class="w-full h-[420px] bg-slate-50 border border-slate-200 rounded-xl cursor-grab active:cursor-grabbing relative overflow-hidden shadow-inner"></div>
+                
+                <div class="absolute bottom-6 left-6 bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-200 text-[11px] text-slate-700 shadow pointer-events-none">
+                    <i class="fa-solid fa-rotate text-[#5c8ab5] mr-1"></i> Linke Maustaste zum Drehen halten
+                </div>
+            </div>
+
+            <!-- Rechte Spalte: Wirkflächen & Formeln -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between space-y-4">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-[#5c8ab5]"></i> Erläuterung der Wirkflächen
+                    </h3>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                        Im Zylinderrohr wirkt der Druck auf unterschiedliche Flächen, je nach Bewegungsrichtung:
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <!-- Ausfahren -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200">
+                            <div class="flex items-center gap-2 text-emerald-700 font-bold text-xs uppercase mb-2">
+                                <i class="fa-solid fa-square-full text-emerald-600"></i> Kraftseite zum Ausfahren
+                            </div>
+                            <p class="text-[11px] text-slate-700 leading-relaxed">
+                                <strong>Volle Kolbenfläche:</strong><br>
+                                $\left(A = \frac{\pi}{4} \cdot d^2\right)$<br>
+                                Maximale Vorschubkraft auf der reinen Kreisfläche.
+                            </p>
+                        </div>
+
+                        <!-- Einfahren -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-blue-200">
+                            <div class="flex items-center gap-2 text-[#5c8ab5] font-bold text-xs uppercase mb-2">
+                                <i class="fa-solid fa-ring text-[#5c8ab5]"></i> Kraftseite zum Einfahren
+                            </div>
+                            <p class="text-[11px] text-slate-700 leading-relaxed">
+                                <strong>Ringfläche (abzgl. Stange):</strong><br>
+                                $\left(A_{\text{Ring}} = \frac{\pi}{4} \cdot (d^2 - d_{\text{Stange}}^2)\right)$<br>
+                                Reduzierte Fläche beim Rückhub.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Sektion 3: Interaktiver Kraftrechner -->
+        <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 sm:p-8 space-y-6">
+            <div class="text-center space-y-1">
+                <h3 class="text-xl font-bold text-slate-900">Interaktiver Zylinder-Kraftrechner (ISO 15552)</h3>
+                <p class="text-xs text-slate-500">Wähle den Kolbendurchmesser (der Stangendurchmesser wird normgerecht voreingestellt, bleibt aber frei anpassbar) und regle den Druck.</p>
+            </div>
+
+            <!-- Inputs -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-slate-50 p-5 rounded-xl border border-slate-200">
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase tracking-wider text-slate-600 font-semibold">
+                        <i class="fa-solid fa-circle text-[#5c8ab5] mr-1"></i> Kolben-Durchmesser (mm)
+                    </label>
+                    <select id="kolbenInput" 
+                        class="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-800 font-mono text-base focus:outline-none focus:border-[#5c8ab5] transition cursor-pointer"
+                        onchange="onKolbenChange()">
+                        <option value="32" selected>32 mm</option>
+                        <option value="40">40 mm</option>
+                        <option value="50">50 mm</option>
+                        <option value="63">63 mm</option>
+                        <option value="80">80 mm</option>
+                        <option value="100">100 mm</option>
+                        <option value="125">125 mm</option>
+                    </select>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase tracking-wider text-slate-600 font-semibold">
+                        <i class="fa-solid fa-circle-dot text-blue-400 mr-1"></i> Stangen-Durchmesser (mm) <span class="text-emerald-600 text-[10px] lowercase">(individuell anpassbar)</span>
+                    </label>
+                    <input type="number" id="stangeInput" min="0" step="1" 
+                        class="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-800 font-mono text-base focus:outline-none focus:border-[#5c8ab5] transition"
+                        oninput="calculateForces()">
+                </div>
+            </div>
+
+            <!-- Schieberegler Druck -->
+            <div class="space-y-3 bg-slate-50 p-5 rounded-xl border border-slate-200">
+                <div class="flex justify-between items-center">
+                    <label class="text-xs uppercase tracking-wider text-slate-600 font-semibold">
+                        <i class="fa-solid fa-sliders text-[#5c8ab5] mr-1"></i> Anliegender Betriebsdruck (bar)
+                    </label>
+                    <span id="pressureVal" class="text-lg font-bold text-[#5c8ab5] font-mono">6.0 bar</span>
+                </div>
+                <input type="range" id="pressureSlider" min="0.5" max="16" step="0.5" value="6" 
+                    class="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#5c8ab5]"
+                    oninput="calculateForces()">
+                <div class="flex justify-between text-xs text-slate-400 font-mono">
+                    <span>0.5 bar</span>
+                    <span>8 bar</span>
+                    <span>16 bar</span>
+                </div>
+            </div>
+
+            <!-- Ergebnisse -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Ausfahren -->
+                <div class="bg-slate-50 text-slate-900 p-6 rounded-xl border border-emerald-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs uppercase tracking-wider text-emerald-700 font-bold block mb-1">
+                            <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i> Kraft Ausfahren (Kolbenfläche)
+                        </span>
+                        <span class="text-xs text-slate-500">Vorschubkraft (inkl. 85% Wirkungsgrad)</span>
+                    </div>
+                    <div class="mt-4 space-y-1">
+                        <div class="text-3xl font-black text-emerald-600 font-mono" id="forceOutVal">0 N</div>
+                        <div class="text-xs text-slate-600 font-mono" id="forceOutKg">≈ 0.0 kg real</div>
+                        <div class="text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-200" id="forceOutTheo">Theoretisch: 0 N</div>
+                    </div>
+                </div>
+
+                <!-- Einfahren -->
+                <div class="bg-slate-50 text-slate-900 p-6 rounded-xl border border-blue-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs uppercase tracking-wider text-[#5c8ab5] font-bold block mb-1">
+                            <i class="fa-solid fa-arrow-left-long-to-bracket mr-1"></i> Kraft Einfahren (Ringfläche)
+                        </span>
+                        <span class="text-xs text-slate-500">Rückholkraft (inkl. 85% Wirkungsgrad)</span>
+                    </div>
+                    <div class="mt-4 space-y-1">
+                        <div class="text-3xl font-black text-[#5c8ab5] font-mono" id="forceInVal">0 N</div>
+                        <div class="text-xs text-slate-600 font-mono" id="forceInKg">≈ 0.0 kg real</div>
+                        <div class="text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-200" id="forceInTheo">Theoretisch: 0 N</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call-to-Action Buttons nach den Ergebnissen -->
+            <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="https://jenpneumatik.pneumatikatlas.com/katalog/de/pneumatische-zylinder/%7BDC9A19AE-8F48-4045-BD8F-48DD0D760723%7D" target="_blank" rel="noopener"
+                   class="w-full sm:w-auto bg-[#5c8ab5] hover:bg-[#4b7398] text-white font-bold px-6 py-3 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-cart-shopping"></i> Zylinder im Webshop
+                </a>
+                <a href="mailto:mail@jenpneumatik.de?subject=Anfrage%20zu%20pneumatischen%20Zylindern&body=Sehr%20geehrte%20Damen%20und%20Herren,%0A%0AIch%20interessiere%20mich%20für%20pneumatische%20Zylinder%20und%20würde%20gerne%20folgende%20Komponenten%20anfragen:%0A%0A-%20Genormter%20Zylinder:%20[Ja%20/%20Nein%20/%20Welche%20Norm]%0A-%20Kolbendurchmesser:%20[Bitte%20eintragen]%20mm%0A-%20Hublänge:%20[Bitte%20eintragen]%20mm%0A-%20Stückzahl:%20[Bitte%20eintragen]%0A-%20weitere%20Spezifikationen:%20[Bitte%20eintragen]%0A%0ABitte%20lassen%20Sie%20mir%20ein%20Angebot%20zukommen.%0A%0AFreundliche%20Grüße"
+                   class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold px-6 py-3 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-envelope"></i> Anfrage an uns
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p>© 2026 jenpneumatik & Schlauchtechnik GmbH · JENPNEUMASTER</p>
+    </footer>
+
+    <!-- Three.js Skript & Rechner -->
+    <script>
+        const isoStangenMap = { 32: 12, 40: 16, 50: 20, 63: 20, 80: 25, 100: 25, 125: 32 };
+
+        function onKolbenChange() {
+            const kolbenVal = parseInt(document.getElementById('kolbenInput').value);
+            const stangeField = document.getElementById('stangeInput');
+            if (isoStangenMap[kolbenVal]) {
+                stangeField.value = isoStangenMap[kolbenVal];
+            }
+            calculateForces();
+        }
+
+        function calculateForces() {
+            const d_kolben = parseFloat(document.getElementById('kolbenInput').value) || 0;
+            const d_stange = parseFloat(document.getElementById('stangeInput').value) || 0;
+            const p_bar = parseFloat(document.getElementById('pressureSlider').value) || 0;
+
+            document.getElementById('pressureVal').innerText = p_bar.toFixed(1) + " bar";
+
+            const p_nmm2 = p_bar * 0.1;
+            const a_kolben = (Math.PI / 4) * Math.pow(d_kolben, 2);
+            const effectiveStange = d_stange < d_kolben ? d_stange : 0;
+            const a_ring = (Math.PI / 4) * (Math.pow(d_kolben, 2) - Math.pow(effectiveStange, 2));
+
+            const f_out_theo = a_kolben * p_nmm2;
+            const f_in_theo = a_ring * p_nmm2;
+
+            const efficiency = 0.85;
+            const f_out_prac = f_out_theo * efficiency;
+            const f_in_prac = f_in_theo * efficiency;
+
+            const kg_out = f_out_prac / 9.81;
+            const kg_in = f_in_prac / 9.81;
+
+            document.getElementById('forceOutVal').innerText = `${Math.round(f_out_prac).toLocaleString('de-DE')} N`;
+            document.getElementById('forceOutKg').innerText = `≈ ${kg_out.toFixed(1)} kg real`;
+            document.getElementById('forceOutTheo').innerText = `Theoretisch: ${Math.round(f_out_theo).toLocaleString('de-DE')} N`;
+
+            document.getElementById('forceInVal').innerText = `${Math.round(f_in_prac).toLocaleString('de-DE')} N`;
+            document.getElementById('forceInKg').innerText = `≈ ${kg_in.toFixed(1)} kg real`;
+            document.getElementById('forceInTheo').innerText = `Theoretisch: ${Math.round(f_in_theo).toLocaleString('de-DE')} N`;
+        }
+
+        // --- THREE.JS 3D SZENE ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf8fafc);
+
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 1.5, 14);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.shadowMap.enabled = true;
+        container.appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+        
+        const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.5);
+        dirLight1.position.set(10, 20, 15);
+        scene.add(dirLight1);
+
+        const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight2.position.set(-10, -10, -10);
+        scene.add(dirLight2);
+
+        const cylinderGroup = new THREE.Group();
+        scene.add(cylinderGroup);
+
+        // 1. Zylinderrohr
+        const tubeGeo = new THREE.CylinderGeometry(2, 2, 6, 32, 1, true);
+        const tubeMat = new THREE.MeshPhysicalMaterial({ color: 0x94a3b8, metalness: 0.8, roughness: 0.2, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
+        const tube = new THREE.Mesh(tubeGeo, tubeMat);
+        tube.rotation.z = Math.PI / 2;
+        cylinderGroup.add(tube);
+
+        const movingAssembly = new THREE.Group();
+        cylinderGroup.add(movingAssembly);
+
+        // 2. Kolben
+        const pistonGeo = new THREE.CylinderGeometry(1.95, 1.95, 0.8, 32);
+        const pistonMat = new THREE.MeshStandardMaterial({ color: 0x5c8ab5, metalness: 0.6, roughness: 0.3 });
+        const piston = new THREE.Mesh(pistonGeo, pistonMat);
+        piston.rotation.z = Math.PI / 2;
+        movingAssembly.add(piston);
+
+        // 3. Kolbenstange (helles Metallic-Grau)
+        const rodGeo = new THREE.CylinderGeometry(0.6, 0.6, 5, 32);
+        const rodMat = new THREE.MeshStandardMaterial({ color: 0x8892b0, metalness: 0.7, roughness: 0.2 });
+        const rod = new THREE.Mesh(rodGeo, rodMat);
+        rod.rotation.z = Math.PI / 2;
+        rod.position.x = 2.5;
+        movingAssembly.add(rod);
+
+        // 4. Deckel
+        const capGeo = new THREE.CylinderGeometry(2.2, 2.2, 0.4, 32);
+        const capMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8 });
+        
+        const leftCap = new THREE.Mesh(capGeo, capMat);
+        leftCap.rotation.z = Math.PI / 2;
+        leftCap.position.x = -3.1;
+        cylinderGroup.add(leftCap);
+
+        const rightCap = new THREE.Mesh(capGeo, capMat);
+        rightCap.rotation.z = Math.PI / 2;
+        rightCap.position.x = 3.1;
+        cylinderGroup.add(rightCap);
+
+        camera.lookAt(cylinderGroup.position);
+
+        let targetX = -0.5;
+        function movePiston(direction) {
+            if (direction === 'out') {
+                targetX = 1.2;
+            } else {
+                targetX = -1.8;
+            }
+        }
+
+        let isDragging = false;
+        let prevMouse = { x: 0, y: 0 };
+        container.addEventListener('mousedown', (e) => { isDragging = true; prevMouse = { x: e.clientX, y: e.clientY }; });
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            cylinderGroup.rotation.y += (e.clientX - prevMouse.x) * 0.01;
+            cylinderGroup.rotation.x += (e.clientY - prevMouse.y) * 0.01;
+            prevMouse = { x: e.clientX, y: e.clientY };
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            movingAssembly.position.x += (targetX - movingAssembly.position.x) * 0.1;
+            if (!isDragging) {
+                cylinderGroup.rotation.y += 0.002;
+            }
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            camera.lookAt(cylinderGroup.position);
+        });
+
+        window.onload = function() {
+            onKolbenChange();
+        };
+    </script>
+</body>
+</html>
