@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <!-- Kontaktdaten & Aktions-Buttons -->
+            <!-- Kontaktdaten & Ständige Aktions-Buttons (Allgemeiner Webshop im Header) -->
             <div class="flex flex-wrap items-center gap-6 text-xs">
                 <div class="hidden lg:flex items-center space-x-6 text-slate-600">
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-phone text-[#5c8ab5]"></i> 03641 35630</span>
@@ -51,6 +51,11 @@
                 </div>
 
                 <div class="flex items-center gap-2">
+                    <!-- Fester Webshop-Link im Header zur Startseite -->
+                    <a href="https://jenpneumatik.pneumatikatlas.com/de" target="_blank" rel="noopener" 
+                       class="bg-[#5c8ab5] hover:bg-[#4b7398] text-white font-bold px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 text-xs">
+                        <i class="fa-solid fa-cart-shopping"></i> Webshop
+                    </a>
                     <a href="https://www.jenpneumatik.de/" target="_blank" rel="noopener" 
                        class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 text-xs">
                         <i class="fa-solid fa-globe text-blue-400"></i> Website
@@ -160,7 +165,7 @@
                     <select id="kolbenInput" 
                         class="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-800 font-mono text-base focus:outline-none focus:border-[#5c8ab5] transition cursor-pointer"
                         onchange="onKolbenChange()">
-                        <!-- Optionen werden dynamisch per JS geladen -->
+                        <!-- Optionen werden dynamisch geladen -->
                     </select>
                 </div>
                 
@@ -225,7 +230,7 @@
                 </div>
             </div>
 
-            <!-- Call-to-Action Buttons nach den Ergebnissen -->
+            <!-- Call-to-Action Buttons nach den Ergebnissen (Webshop unten bleibt dynamisch) -->
             <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-center items-center gap-4">
                 <a id="webshopBtn" href="https://jenpneumatik.pneumatikatlas.com/de" target="_blank" rel="noopener"
                    class="w-full sm:w-auto bg-[#5c8ab5] hover:bg-[#4b7398] text-white font-bold px-6 py-3 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm">
@@ -260,7 +265,7 @@
                 diameters: [32, 40, 50, 63, 80, 100, 125],
                 isoMap: { 32: 12, 40: 16, 50: 20, 63: 20, 80: 25, 100: 25, 125: 32 },
                 minPress: 0.5, maxPress: 16, stepPress: 0.5, defaultPress: 6, unitPress: "bar",
-                shopUrl: "https://jenpneumatik.pneumatikatlas.com/katalog/de/pneumatische-zylinder/%7BDC9A19AE-8F48-4045-BD8F-48DD0D760723%7D",
+                shopUrl: "https://jenpneumatik.pneumatikatlas.com/de",
                 shopText: "Zylinder im Webshop",
                 efficiency: 0.85,
                 emailSubject: "Anfrage zu pneumatischen Zylindern",
@@ -277,7 +282,7 @@
                 minPress: 10, maxPress: 250, stepPress: 10, defaultPress: 160, unitPress: "bar",
                 shopUrl: "https://jenpneumatik.pneumatikatlas.com/katalog/de/hydraulikzylinder/%7BEB6D8279-7788-4233-A1A4-FC28F1D3D5EB%7D/suche/Hydraulikzylinder",
                 shopText: "Zylinder im Webshop",
-                efficiency: 0.95, // Geringere Reibung durch Hydraulikölfilm
+                efficiency: 0.95,
                 emailSubject: "Anfrage zu Hydraulikzylindern",
                 emailBody: "Sehr geehrte Damen und Herren,\n\nIch interessiere mich für Hydraulikzylinder und würde gerne folgende Komponenten anfragen:\n\n- Kolbendurchmesser: [Bitte eintragen] mm\n- Stangendurchmesser: [Bitte eintragen] mm\n- Betriebsdruck: [Bitte eintragen] bar\n- Hublänge: [Bitte eintragen] mm\n- Stückzahl: [Bitte eintragen]\n- weitere Spezifikationen: [Bitte eintragen]\n\nBitte lassen Sie mir ein Angebot zukommen.\n\nFreundliche Grüße"
             }
@@ -319,7 +324,7 @@
                 select.appendChild(opt);
             });
 
-            // Webshop Link & Button Text
+            // Webshop Link & Button Text unten (dynamisch)
             const shopBtn = document.getElementById('webshopBtn');
             shopBtn.href = c.shopUrl;
             shopBtn.innerHTML = `<i class="fa-solid fa-cart-shopping"></i> ${c.shopText}`;
@@ -349,7 +354,6 @@
 
             document.getElementById('pressureVal').innerText = `${p_val.toFixed(1)} ${c.unitPress}`;
 
-            // 1 bar = 0.1 N/mm²
             const p_nmm2 = p_val * 0.1;
             const a_kolben = (Math.PI / 4) * Math.pow(d_kolben, 2);
             const effectiveStange = d_stange < d_kolben ? d_stange : 0;
@@ -362,10 +366,9 @@
             const f_in_prac = f_in_theo * c.efficiency;
 
             if (currentMode === 'hydraulik') {
-                // Ausgabe in kN und Tonnen für Hydraulik
                 const kn_out = f_out_prac / 1000;
                 const kn_in = f_in_prac / 1000;
-                const t_out = kn_out / 9.81 * 10; // grobe Näherung in t
+                const t_out = kn_out / 9.81 * 10;
                 const t_in = kn_in / 9.81 * 10;
 
                 document.getElementById('forceOutVal').innerText = `${kn_out.toFixed(1)} kN`;
@@ -379,7 +382,6 @@
                 document.getElementById('outDesc').innerText = "Vorschubkraft (inkl. 95% Wirkungsgrad)";
                 document.getElementById('inDesc').innerText = "Rückholkraft (inkl. 95% Wirkungsgrad)";
             } else {
-                // Ausgabe in N und kg für Pneumatik
                 const kg_out = f_out_prac / 9.81;
                 const kg_in = f_in_prac / 9.81;
 
